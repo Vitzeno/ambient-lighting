@@ -10,8 +10,8 @@ MONITER_RES_WIDTH = 3840
 MONITER_RES_HEIGHT = 2160
 
 # On a 16:9 4k moniter this should produce a centered 1600x900 screenshot
-SCREENSHOT_WIDTH = 800
-SCREENSHOT_HEIGHT = 450
+SCREENSHOT_WIDTH = 1500#800
+SCREENSHOT_HEIGHT = 10#450
 
 def main():
     numLights = None
@@ -60,8 +60,9 @@ def getScreenColour():
 
     hue = hist.getDominantHue()
     saturation = hist.getDominantSaturation()
+    brightness = hist.getDominantBrightness()
 
-    colour = [convertToLIFXFormat(hue), convertToLIFXFormat(saturation), 65535, 3500]
+    colour = [convertToLIFXFormat(hue), convertToLIFXFormat(saturation), convertToLIFXFormat(brightness), 3500]
     print("Colour: ", colour)
     return colour
 

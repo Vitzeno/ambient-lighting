@@ -12,11 +12,14 @@ class Histogram:
     def __init__(self):
         self.histogram = dict()
         self.shistogram = dict()
+        self.bhistogram = dict()
 
         for i in range(0, 361):
             self.histogram[i] = 0
         for i in range(0, 101):
             self.shistogram[i] = 0
+        for i in range(0, 101):
+            self.bhistogram[i] = 0
 
     '''
     Provided an image, this method populates the hue valeus in the 
@@ -31,6 +34,7 @@ class Histogram:
                 #print(hsbvals)
                 self.histogram[round(hsbvals[0])] += 1
                 self.shistogram[round(hsbvals[1])] += 1
+                self.bhistogram[round(hsbvals[2])] += 1
     
     '''
     Returns the hue value with the maximum peak in the hue histogram
@@ -43,6 +47,12 @@ class Histogram:
     '''
     def getDominantSaturation(self):
         return max(self.shistogram.items(), key=operator.itemgetter(1))[0]
+    
+    '''
+    Returns the brightness value with the maximum peak in the brightness histogram
+    '''
+    def getDominantBrightness(self):
+        return max(self.bhistogram.items(), key=operator.itemgetter(1))[0]
 
     '''
     Convers a colour given in seprate r g b vaues into hsb format
