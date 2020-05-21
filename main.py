@@ -33,13 +33,14 @@ def main():
     devices = lifx.get_lights()
     bulb = devices[0]
     print("Selected {}".format(bulb.get_label()))
+    initColour = getBulbColour(bulb)
 
     while True:
         try:
             colour = getScreenColour()
             setBulbColour(bulb, colour)
         except (KeyboardInterrupt):
-            setBulbColour(bulb, [0.0, 0.0, 65535, 3500])
+            setBulbColour(bulb, initColour)
             break
 
 '''
