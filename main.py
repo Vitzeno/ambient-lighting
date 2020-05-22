@@ -45,7 +45,7 @@ def main():
 
 '''
 Uses PIL to get a screenshot on the main mointer,
-tested to work with multiple moniters.
+tested to work with multiple moniters setups.
 
 Not very generic, hardcoded values on work on my moniter
 with resolution of 3840x2160
@@ -70,12 +70,7 @@ def getScreenColour():
 def convertToLIFXFormat(value):
     return min(value/360 * 65535, 65535)
 
-def scaled(value, oldMax, oldMin):
-    oldMin = oldMin
-    oldMax = oldMax
-    newMin = 0
-    newMax = 65535
-
+def scaled(value, oldMax, oldMin, newMin = 0, newMax = 65535):
     return (newMax - newMin) / (oldMax - oldMin) * (value - oldMax) + newMax
 
 def setBulbColour(bulb, colour):
