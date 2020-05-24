@@ -9,9 +9,8 @@ from lifxlan import BLUE, GREEN, RED, CYAN, PINK, COLD_WHITE, LifxLAN
 MONITER_RES_WIDTH = 3840
 MONITER_RES_HEIGHT = 2160
 
-# On a 16:9 4k moniter this should produce a centered 1600x900 screenshot
-SCREENSHOT_WIDTH = 1500#800
-SCREENSHOT_HEIGHT = 10#450
+SCREENSHOT_WIDTH = 1500
+SCREENSHOT_HEIGHT = 20
 
 def main():
     numLights = None
@@ -38,44 +37,108 @@ def main():
     while True:
         try:
             colour = getScreenColour()
-            setBulbColour(bulb, colour)
+            setBulbColourInterpolated(bulb, colour, 15)
         except (KeyboardInterrupt):
             setBulbColour(bulb, initColour)
             break
 
 '''
 Uses PIL to get a screenshot on the main mointer,
-tested to work with multiple moniters setups.
-
-Not very generic, hardcoded values on work on my moniter
-with resolution of 3840x2160
+tested to work with multi-moniter setups.
 '''
 def getScreenColour():
-    image = ImageGrab.grab(bbox=(MONITER_RES_WIDTH / 2 - SCREENSHOT_WIDTH, MONITER_RES_HEIGHT / 2 - SCREENSHOT_HEIGHT, MONITER_RES_WIDTH / 2 + SCREENSHOT_WIDTH, MONITER_RES_HEIGHT / 2 + SCREENSHOT_HEIGHT))  # X1,Y1,X2,Y2
-    pixels = image.load()
+    # X1,Y1,X2,Y2
+    image = ImageGrab.grab(bbox=(MONITER_RES_WIDTH / 2 - SCREENSHOT_WIDTH, MONITER_RES_HEIGHT / 2 - SCREENSHOT_HEIGHT, MONITER_RES_WIDTH / 2 + SCREENSHOT_WIDTH, MONITER_RES_HEIGHT / 2 + SCREENSHOT_HEIGHT))
     #image.save("test.png")
 
     hist = Histogram()
     hist.buildHistogram(image)
-    #hist.printHistogram()
 
     hue = hist.getDominantHue()
     saturation = hist.getDominantSaturation()
     brightness = hist.getDominantBrightness()
 
-    colour = [convertToLIFXFormat(hue), convertToLIFXFormat(saturation), convertToLIFXFormat(brightness), 3500]
-    print("Colour: ", colour)
+    colour = [convertToLIFXFormat(hue), convertToLIFXFormat(saturation), convertToLIFXFormat(brightness), 6000]
     return colour
 
+'''
+Converts HSB values from range 0-100 to 0-65535 as expected by LIFX LAN protocol
+
+@param 
+    value: int or float to convert
+
+@return 
+    converted int or float
+'''
 def convertToLIFXFormat(value):
     return min(value/360 * 65535, 65535)
 
+'''
+A simple nunmber sacling method
+
+@param
+    value: value to scale int or float
+    oldMax: max value of current scale range
+    oldMin: min value of current scale range
+
+    newMin: min value of new scale range
+    newMax: max value of new scale range
+
+@return 
+    scaled int or float
+'''
 def scaled(value, oldMax, oldMin, newMin = 0, newMax = 65535):
     return (newMax - newMin) / (oldMax - oldMin) * (value - oldMax) + newMax
 
+'''
+Sets the bulb colour using LIFX LAN protocol, but interpolates smoothly between
+the current colour and new colour. The step size determines how fast this
+interploation shoul occur.
+
+@param
+    bulb: LIFX bulb object
+    colour: HSBK colour array
+    setps: int determinig interpolation speed
+'''
+def setBulbColourInterpolated(bulb, colour, steps):
+    initColour = bulb.get_color()
+    for i in range(0, steps):
+        hsbk = [interpolate(initColour[0], colour[0], i + 1, steps), interpolate(initColour[1], colour[1], i + 1, steps), interpolate(initColour[2], colour[2], i + 1, steps), colour[3]]
+        print("step: {0} value {1}" .format(i, hsbk))
+        sleep(0.05)
+        setBulbColour(bulb, hsbk)
+
+'''
+Interpolated between two values
+
+@params
+    startValue: start values
+    endValue: end value to interpolate to
+    stepNumber: number of steps interpolation should take
+    lastStepNumber: totol number of steps
+
+@return
+    next value in interpolation step
+'''
+def interpolate(startValue, endValue, stepNumber, lastStepNumber):
+    return (endValue - startValue) * stepNumber / lastStepNumber + startValue
+
+'''
+Simply sets the bulb colour using the LIFX LAN protocol
+
+@param
+    bulb: LIFX bulb object
+    colour: HSBK colour array
+'''
 def setBulbColour(bulb, colour):
     bulb.set_color(colour, rapid=True)
 
+'''
+Simply gets the current bulb colour in HSB using LIFX LAN protocol
+
+@param
+    bulb: LIFX bulb object
+'''
 def getBulbColour(bulb):
     return bulb.get_color()
 
