@@ -4,7 +4,7 @@ This project makes using of lifxlan library which immplemts the LIFX LAN protoco
 
 ## Demo Video
 
-![](/AmbientLighting.mp4)
+![](/AmbientLightingDemo.gif)
 
 ## Warning
 
