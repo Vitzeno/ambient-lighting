@@ -2,15 +2,20 @@ import sys
 from time import sleep
 
 from Histogram import Histogram
+from Settings import Settings
 
 from PIL import ImageGrab
 from lifxlan import BLUE, GREEN, RED, CYAN, PINK, COLD_WHITE, LifxLAN
 
+'''
 MONITER_RES_WIDTH = 3840
 MONITER_RES_HEIGHT = 2160
 
 SCREENSHOT_WIDTH = 1500
 SCREENSHOT_HEIGHT = 20
+'''
+
+settings = Settings().getSettingsObject()
 
 def main():
     numLights = None
@@ -22,6 +27,14 @@ def main():
     else:
         numLights = int(sys.argv[1])
 
+    
+    
+
+    mainLoop(numLights)
+
+
+
+def mainLoop(numLights):
     '''
     LifxLAN client, number of lights be None (unknown), however providing the number of lights
     on the LAN will make discovery faster
@@ -42,13 +55,14 @@ def main():
             setBulbColour(bulb, initColour)
             break
 
+
 '''
 Uses PIL to get a screenshot on the main mointer,
 tested to work with multi-moniter setups.
 '''
 def getScreenColour():
     # X1,Y1,X2,Y2
-    image = ImageGrab.grab(bbox=(MONITER_RES_WIDTH / 2 - SCREENSHOT_WIDTH, MONITER_RES_HEIGHT / 2 - SCREENSHOT_HEIGHT, MONITER_RES_WIDTH / 2 + SCREENSHOT_WIDTH, MONITER_RES_HEIGHT / 2 + SCREENSHOT_HEIGHT))
+    image = ImageGrab.grab(bbox=(settings.MONITER_RES_WIDTH / 2 - settings.SCREENSHOT_WIDTH, settings.MONITER_RES_HEIGHT / 2 - settings.SCREENSHOT_HEIGHT, settings.MONITER_RES_WIDTH / 2 + settings.SCREENSHOT_WIDTH, settings.MONITER_RES_HEIGHT / 2 + settings.SCREENSHOT_HEIGHT))
     #image.save("test.png")
 
     hist = Histogram()
