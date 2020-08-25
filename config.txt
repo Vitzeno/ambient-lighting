@@ -1,1 +1,1 @@
-{"py/object": "Settings.Settings", "MONITER_RES_WIDTH": 3840, "MONITER_RES_HEIGHT": 2160, "SCREENSHOT_WIDTH": 1500, "SCREENSHOT_HEIGHT": 20}
+{"py/object": "Settings.Settings", "MONITER_RES_WIDTH": 3840, "MONITER_RES_HEIGHT": 2160, "SCREENSHOT_WIDTH": 1500, "SCREENSHOT_HEIGHT": 20, "title": "Vitzeno's LightRoom", "downsacling_quality": 0, "transition_steps": 5}

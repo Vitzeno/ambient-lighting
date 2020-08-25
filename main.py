@@ -5,7 +5,7 @@ from time import sleep
 from Histogram import Histogram
 from Settings import Settings
 
-from PIL import ImageGrab
+from PIL import ImageGrab, ImageOps, Image
 from lifxlan import BLUE, GREEN, RED, CYAN, PINK, COLD_WHITE, LifxLAN
 
 '''
@@ -38,7 +38,7 @@ Simple method to present user with a menu of options
 '''
 def presentMenu(numLights):
     mainMenu = True
-    title = pyfiglet.figlet_format("Vitzeno's LightRoom")
+    title = pyfiglet.figlet_format(settings.title)
 
     while(mainMenu):
         print(title)
@@ -84,7 +84,7 @@ def mimicScreen(numLights):
     while True:
         try:
             colour = getScreenColour()
-            setBulbColourInterpolated(bulb, colour, 15)
+            setBulbColourInterpolated(bulb, colour, settings.transition_steps)
         except (KeyboardInterrupt):
             setBulbColour(bulb, initColour)
             break
@@ -96,11 +96,24 @@ tested to work with multi-moniter setups.
 '''
 def getScreenColour():
     # X1,Y1,X2,Y2
-    image = ImageGrab.grab(bbox=(settings.MONITER_RES_WIDTH / 2 - settings.SCREENSHOT_WIDTH, settings.MONITER_RES_HEIGHT / 2 - settings.SCREENSHOT_HEIGHT, settings.MONITER_RES_WIDTH / 2 + settings.SCREENSHOT_WIDTH, settings.MONITER_RES_HEIGHT / 2 + settings.SCREENSHOT_HEIGHT))
-    #image.save("test.png")
+    #image = ImageGrab.grab(bbox=(settings.MONITER_RES_WIDTH / 2 - settings.SCREENSHOT_WIDTH, settings.MONITER_RES_HEIGHT / 2 - settings.SCREENSHOT_HEIGHT, settings.MONITER_RES_WIDTH / 2 + settings.SCREENSHOT_WIDTH, settings.MONITER_RES_HEIGHT / 2 + settings.SCREENSHOT_HEIGHT))
+    
+    '''
+    Downscaling filters
+
+    Image.NEAREST   (0)
+    Image.LANCZOS   (1)
+    Image.BILINEAR  (2)
+    Image.BICUBIC   (3) 
+    Image.BOX       (4)
+    Image.HAMMING   (5)
+    '''
+    image = ImageGrab.grab()
+    scaledImage = ImageOps.scale(image, 0.1, settings.downsacling_quality)
+    #scaledImage.save("scale_test.png")
 
     hist = Histogram()
-    hist.buildHistogram(image)
+    hist.buildHistogram(scaledImage)
 
     hue = hist.getDominantHue()
     saturation = hist.getDominantSaturation()
@@ -152,7 +165,7 @@ def setBulbColourInterpolated(bulb, colour, steps):
     initColour = bulb.get_color()
     for i in range(0, steps):
         hsbk = [interpolate(initColour[0], colour[0], i + 1, steps), interpolate(initColour[1], colour[1], i + 1, steps), interpolate(initColour[2], colour[2], i + 1, steps), colour[3]]
-        print("step: {0} value {1}" .format(i, hsbk))
+        print("[DEBUG] step: {0} value {1}" .format(i, hsbk))
         sleep(0.05)
         setBulbColour(bulb, hsbk)
 
