@@ -1,4 +1,5 @@
 import sys
+import pyfiglet
 from time import sleep
 
 from Histogram import Histogram
@@ -27,14 +28,47 @@ def main():
     else:
         numLights = int(sys.argv[1])
 
-    
-    
+    presentMenu(numLights)
 
-    mainLoop(numLights)
+'''
+Simple method to present user with a menu of options
 
+@param 
+    numLights: number of lights on the LAN, simple pass along required by mimicScreen()
+'''
+def presentMenu(numLights):
+    mainMenu = True
+    title = pyfiglet.figlet_format("Vitzeno's LightRoom")
 
+    while(mainMenu):
+        print(title)
+        print("\nSelect from the options below (and press enter) \n")
+        print("1: Mimic Screen")
+        print("2: Set lights manually")
+        print("3: Settings")
+        print("4: Quit")
 
-def mainLoop(numLights):
+        choice = input()
+        if(int(choice) == 1):
+            mainMenu = False
+            mimicScreen(numLights)
+        elif(int(choice) == 2):
+            mainMenu = False
+            pass
+        elif(int(choice) == 3):
+            mainMenu = False
+            pass
+        elif(int(choice) == 4):
+            mainMenu = False
+            pass
+
+'''
+Allows connected lights to mimic the colour of the users screen contents
+
+@param 
+    numLights: number of lights on the LAN
+'''
+def mimicScreen(numLights):
     '''
     LifxLAN client, number of lights be None (unknown), however providing the number of lights
     on the LAN will make discovery faster
